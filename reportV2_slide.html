@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>凱銳光電 — 能源改善報告 V2</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Microsoft JhengHei','微軟正黑體',sans-serif; background:#0d1117; color:#e6edf3; overflow:hidden; }
+
+/* ── deck & slides ── */
+.deck { width:100vw; height:100vh; position:relative; }
+.slide {
+  position:absolute; inset:0; display:none; opacity:0;
+  flex-direction:column; justify-content:center; align-items:center;
+  padding:44px 60px; transition:opacity .35s;
+}
+.slide.active { display:flex; opacity:1; }
+
+/* ── nav ── */
+.nav { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); display:flex; gap:10px; z-index:100; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.25); cursor:pointer; transition:background .3s; }
+.dot.on { background:#3fb950; }
+.arr {
+  position:fixed; top:50%; transform:translateY(-50%);
+  background:rgba(255,255,255,.07); border:none; color:#e6edf3;
+  font-size:20px; width:40px; height:40px; border-radius:50%;
+  cursor:pointer; z-index:100; transition:background .2s;
+}
+.arr:hover { background:rgba(255,255,255,.15); }
+#bP { left:14px; } #bN { right:14px; }
+.sn { position:fixed; top:18px; right:24px; font-size:12px; color:rgba(255,255,255,.3); }
+
+/* ── typography ── */
+.tag { font-size:11px; letter-spacing:2.5px; color:#3fb950; font-weight:700; margin-bottom:10px; text-transform:uppercase; }
+h1 { font-size:44px; font-weight:700; line-height:1.2; }
+h2 { font-size:28px; font-weight:700; margin-bottom:20px; }
+.sub { font-size:15px; color:rgba(255,255,255,.55); margin-top:6px; }
+.div { width:40px; height:3px; background:#3fb950; border-radius:2px; margin:14px 0; }
+.g  { color:#3fb950; }
+.r  { color:#f85149; }
+.y  { color:#e3b341; }
+.b  { color:#58a6ff; }
+.p  { color:#bc8cff; }
+
+/* ── shared card ── */
+.card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:14px; padding:22px 20px;
+}
+.card.glow-g { border-color:rgba(63,185,80,.3); }
+.card.glow-r { border-color:rgba(248,81,73,.3); }
+.card.glow-y { border-color:rgba(227,179,65,.3); }
+.card.glow-b { border-color:rgba(88,166,255,.3); }
+.card.glow-p { border-color:rgba(188,140,255,.3); }
+
+/* ══════════════════════════════════════
+   SLIDE 1 — COVER
+══════════════════════════════════════ */
+#s1 { background:linear-gradient(135deg,#0d1117 0%,#161b22 100%); }
+#s1 .wrap { max-width:960px; width:100%; }
+.kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-top:32px; }
+.kpi { text-align:center; padding:20px 12px; }
+.kpi .num { font-size:30px; font-weight:700; }
+.kpi .unit { font-size:11px; color:rgba(255,255,255,.45); margin-top:2px; }
+.kpi .lbl { font-size:13px; margin-top:6px; color:rgba(255,255,255,.7); }
+.badge-row { display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+.badge { font-size:12px; padding:5px 12px; border-radius:20px; border:1px solid; }
+.badge.g { color:#3fb950; border-color:rgba(63,185,80,.4); background:rgba(63,185,80,.08); }
+.badge.y { color:#e3b341; border-color:rgba(227,179,65,.4); background:rgba(227,179,65,.08); }
+.badge.r { color:#f85149; border-color:rgba(248,81,73,.4); background:rgba(248,81,73,.08); }
+
+/* ══════════════════════════════════════
+   SLIDE 2 — SEU
+══════════════════════════════════════ */
+#s2 { background:linear-gradient(135deg,#0d1117 0%,#1a1230 100%); }
+#s2 .wrap { max-width:980px; width:100%; }
+.seu-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:16px; }
+.seu-card { border-radius:14px; padding:24px 22px; position:relative; overflow:hidden; }
+.seu-card.s1 { background:linear-gradient(135deg,rgba(248,81,73,.12),rgba(248,81,73,.04)); border:1px solid rgba(248,81,73,.3); }
+.seu-card.s2 { background:linear-gradient(135deg,rgba(88,166,255,.1),rgba(88,166,255,.03)); border:1px solid rgba(88,166,255,.25); }
+.seu-num { font-size:11px; letter-spacing:2px; font-weight:700; margin-bottom:8px; }
+.seu-title { font-size:20px; font-weight:700; margin-bottom:14px; }
+.seu-pct { font-size:52px; font-weight:700; opacity:.15; position:absolute; right:20px; top:16px; }
+.seu-row { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:13px; }
+.seu-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ctrl-list { margin-top:18px; display:flex; flex-direction:column; gap:6px; }
+.ctrl-item { display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:rgba(255,255,255,.7); }
+.ctrl-icon { flex-shrink:0; margin-top:1px; }
+.iso-note { margin-top:20px; padding:12px 16px; background:rgba(63,185,80,.07); border:1px solid rgba(63,185,80,.2); border-radius:10px; font-size:12.5px; color:rgba(255,255,255,.65); }
+
+/* ══════════════════════════════════════
+   SLIDE 3 — PROBLEMS
+══════════════════════════════════════ */
+#s3 { background:linear-gradient(135deg,#1a0a0a 0%,#0d1117 100%); }
+#s3 .wrap { max-width:1020px; width:100%; }
+.prob-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px; }
+.prob { border-radius:12px; padding:20px 18px; position:relative; }
+.prob.p1 { background:rgba(248,81,73,.08); border:1px solid rgba(248,81,73,.3); }
+.prob.p2 { background:rgba(227,179,65,.07); border:1px solid rgba(227,179,65,.28); }
+.prob.p3 { background:rgba(88,166,255,.07); border:1px solid rgba(88,166,255,.25); }
+.prob.p4 { background:rgba(188,140,255,.07); border:1px solid rgba(188,140,255,.25); }
+.prob.p5 { background:rgba(63,185,80,.07); border:1px solid rgba(63,185,80,.25); }
+.prob.p6 { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); }
+.prob-no { font-size:10px; letter-spacing:2px; opacity:.5; margin-bottom:6px; }
+.prob-t { font-size:14.5px; font-weight:700; margin-bottom:10px; line-height:1.4; }
+.prob-d { font-size:12px; color:rgba(255,255,255,.6); line-height:1.65; }
+.prob-loss { margin-top:12px; font-size:12px; font-weight:600; padding:7px 10px; border-radius:7px; }
+.p1 .prob-loss { background:rgba(248,81,73,.15); color:#f85149; }
+.p2 .prob-loss { background:rgba(227,179,65,.13); color:#e3b341; }
+.p3 .prob-loss { background:rgba(88,166,255,.13); color:#58a6ff; }
+.p4 .prob-loss { background:rgba(188,140,255,.12); color:#bc8cff; }
+.p5 .prob-loss { background:rgba(63,185,80,.12); color:#3fb950; }
+
+/* ══════════════════════════════════════
+   SLIDE 4 — LCC + ACTIONS
+══════════════════════════════════════ */
+#s4 { background:linear-gradient(135deg,#0d1117 0%,#0a1a0d 100%); }
+#s4 .wrap { max-width:1020px; width:100%; }
+.s4-grid { display:grid; grid-template-columns:1fr 1.6fr; gap:24px; margin-top:16px; }
+.lcc-box { border-radius:14px; overflow:hidden; }
+.lcc-head { background:rgba(63,185,80,.15); border:1px solid rgba(63,185,80,.3); border-bottom:none; padding:16px 18px; }
+.lcc-head h3 { font-size:14px; color:#3fb950; }
+.lcc-head p  { font-size:12px; color:rgba(255,255,255,.5); margin-top:3px; }
+.lcc-body { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.09); padding:16px 18px; display:flex; flex-direction:column; gap:10px; }
+.lcc-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.lcc-row .val { font-weight:700; }
+.lcc-total { padding-top:10px; border-top:1px solid rgba(255,255,255,.1); }
+.lcc-total .val { color:#3fb950; font-size:18px; }
+.phase-list { display:flex; flex-direction:column; gap:12px; }
+.phase { border-radius:12px; padding:16px 18px; }
+.phase.ph1 { background:rgba(63,185,80,.07); border:1px solid rgba(63,185,80,.25); }
+.phase.ph2 { background:rgba(88,166,255,.07); border:1px solid rgba(88,166,255,.22); }
+.phase.ph3 { background:rgba(188,140,255,.07); border:1px solid rgba(188,140,255,.22); }
+.ph-label { font-size:10px; letter-spacing:2px; font-weight:700; margin-bottom:6px; }
+.ph-items { display:flex; flex-direction:column; gap:4px; }
+.ph-item { display:flex; justify-content:space-between; font-size:12.5px; }
+.ph-item .sv { font-weight:600; }
+
+/* ══════════════════════════════════════
+   SLIDE 5 — SAVINGS & CARBON
+══════════════════════════════════════ */
+#s5 { background:linear-gradient(135deg,#0d1117 0%,#0a0f1a 100%); }
+#s5 .wrap { max-width:1020px; width:100%; }
+.s5-grid { display:grid; grid-template-columns:1.1fr 1fr; gap:22px; margin-top:16px; }
+.savings-table { width:100%; border-collapse:collapse; font-size:13px; }
+.savings-table th { text-align:left; padding:8px 12px; font-size:11px; letter-spacing:1px; color:rgba(255,255,255,.4); background:rgba(255,255,255,.04); }
+.savings-table td { padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.06); }
+.savings-table tr:last-child td { border-bottom:none; }
+.savings-table .hl td { background:rgba(63,185,80,.07); }
+.bar-bg { background:rgba(255,255,255,.07); border-radius:3px; height:6px; margin-top:4px; }
+.bar-fill { height:6px; border-radius:3px; }
+.carbon-panel { display:flex; flex-direction:column; gap:14px; }
+.carbon-kpi { border-radius:12px; padding:18px 20px; }
+.carbon-kpi.now { background:rgba(248,81,73,.09); border:1px solid rgba(248,81,73,.25); }
+.carbon-kpi.mid { background:rgba(227,179,65,.08); border:1px solid rgba(227,179,65,.22); }
+.carbon-kpi.lng { background:rgba(63,185,80,.08); border:1px solid rgba(63,185,80,.22); }
+.carbon-kpi .cn { font-size:30px; font-weight:700; }
+.carbon-kpi .cl { font-size:12px; color:rgba(255,255,255,.5); margin-top:3px; }
+.carbon-kpi .cd { font-size:12px; margin-top:6px; }
+.summary-strip { margin-top:20px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.sstrip { text-align:center; padding:14px 10px; border-radius:10px; }
+.sstrip.sg { background:rgba(63,185,80,.1); border:1px solid rgba(63,185,80,.25); }
+.sstrip.sb { background:rgba(88,166,255,.1); border:1px solid rgba(88,166,255,.22); }
+.sstrip.sp { background:rgba(188,140,255,.1); border:1px solid rgba(188,140,255,.22); }
+.sstrip .sn2 { font-size:24px; font-weight:700; }
+.sstrip .sl { font-size:11px; color:rgba(255,255,255,.45); margin-top:3px; }
+
+/* ══════════════════════════════════════
+   SLIDE 6 — NEXT STEPS
+══════════════════════════════════════ */
+#s6 { background:linear-gradient(135deg,#0d1117 0%,#161b22 100%); }
+#s6 .wrap { max-width:1020px; width:100%; }
+.s6-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:16px; }
+.action-list { display:flex; flex-direction:column; gap:12px; }
+.action { border-radius:12px; padding:18px 18px; }
+.action.a1 { background:rgba(248,81,73,.08); border:1px solid rgba(248,81,73,.28); }
+.action.a2 { background:rgba(227,179,65,.07); border:1px solid rgba(227,179,65,.26); }
+.action.a3 { background:rgba(63,185,80,.07); border:1px solid rgba(63,185,80,.24); }
+.action-no { font-size:11px; font-weight:700; letter-spacing:1px; margin-bottom:6px; }
+.action-t { font-size:15px; font-weight:700; margin-bottom:6px; }
+.action-d { font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.6; }
+.action-val { margin-top:8px; font-size:12.5px; font-weight:700; }
+.check-box { border-radius:12px; padding:18px 20px; }
+.check-box h3 { font-size:14px; font-weight:700; margin-bottom:12px; }
+.checks { display:flex; flex-direction:column; gap:7px; }
+.ci { display:flex; align-items:flex-start; gap:9px; font-size:12.5px; color:rgba(255,255,255,.7); line-height:1.5; }
+.ci-icon { color:rgba(255,255,255,.25); flex-shrink:0; margin-top:1px; }
+.blutech-box { margin-top:16px; padding:14px 16px; background:linear-gradient(90deg,rgba(63,185,80,.1),rgba(88,166,255,.07)); border:1px solid rgba(63,185,80,.22); border-radius:10px; font-size:12.5px; color:rgba(255,255,255,.65); line-height:1.65; }
+.blutech-box strong { color:#3fb950; }
+.cta { text-align:center; margin-top:16px; font-size:12px; color:rgba(255,255,255,.35); }
+.cta span { color:#3fb950; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ════════════════════════════════
+  SLIDE 1 — 現況總覽
+════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="wrap">
+    <div class="tag">能源改善報告 V2 · ISO 50001 框架 · 2026</div>
+    <h1>凱銳光電<br><span class="g">節能診斷報告</span></h1>
+    <p class="sub">高雄廠區 · 114年度 · 車載影音機 / DVR 製造</p>
+    <div class="div"></div>
+
+    <div class="kpi-row">
+      <div class="kpi card">
+        <div class="num g">1,625<span style="font-size:16px">萬</span></div>
+        <div class="unit">元 / 年</div>
+        <div class="lbl">年電費（估）</div>
+      </div>
+      <div class="kpi card">
+        <div class="num" style="color:#58a6ff">369<span style="font-size:16px">萬</span></div>
+        <div class="unit">度 / 年</div>
+        <div class="lbl">年用電量</div>
+      </div>
+      <div class="kpi card">
+        <div class="num r">1,824</div>
+        <div class="unit">tCO₂e / 年</div>
+        <div class="lbl">年碳排放（估）</div>
+      </div>
+      <div class="kpi card">
+        <div class="num r">65<span style="font-size:16px">%</span></div>
+        <div class="unit">空調系統佔比</div>
+        <div class="lbl">SEU #1</div>
+      </div>
+      <div class="kpi card">
+        <div class="num y">2.60</div>
+        <div class="unit">度 / 台</div>
+        <div class="lbl">能源強度基線</div>
+      </div>
+    </div>
+
+    <div class="badge-row">
+      <div class="badge g">✓ 年用電未達強制申報門檻（800萬度）</div>
+      <div class="badge y">⚠ 冰機 960RT，距強制申報門檻 1,000RT 僅差 40RT</div>
+      <div class="badge r">✗ 承租戶 · 4.4元/度 · 無時間電價可操作</div>
+      <div class="badge g">✓ 節費潛力 248～515萬元／年（節能 15～32%）</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  SLIDE 2 — SEU 識別
+════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="wrap">
+    <div class="tag">ISO 50001 · 重要能源使用識別</div>
+    <h2>兩大 SEU（重要能源使用）</h2>
+
+    <div class="seu-grid">
+      <div class="seu-card s1">
+        <div class="seu-pct r">65%</div>
+        <div class="seu-num r">SEU — 01</div>
+        <div class="seu-title">空調系統<br><span class="r">冰水機群組</span></div>
+        <div class="seu-row"><div class="seu-dot" style="background:#f85149"></div>年用電 2,403,853 度 · 年電費 <strong>1,058萬元</strong></div>
+        <div class="seu-row"><div class="seu-dot" style="background:#f85149"></div>冰水主機 2 台 × 252.82kW（設計 0.544 kW/RT）</div>
+        <div class="seu-row"><div class="seu-dot" style="background:#f85149"></div>冷卻水泵 + 冰水泵 + 冷卻水塔 <strong>全無 VFD</strong></div>
+        <div class="ctrl-list">
+          <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:2px;letter-spacing:1px;">ISO 50001 操作控制要求</div>
+          <div class="ctrl-item"><span class="ctrl-icon">📋</span>建立冰機啟停台數判斷基準（冷負荷閾值）</div>
+          <div class="ctrl-item"><span class="ctrl-icon">📊</span>安裝 kW/RT 即時監控（目前完全缺口）</div>
+          <div class="ctrl-item"><span class="ctrl-icon">🎯</span>設定績效目標：kW/RT &lt; 0.60，&gt; 0.70 告警</div>
+        </div>
+      </div>
+
+      <div class="seu-card s2">
+        <div class="seu-pct b">25%</div>
+        <div class="seu-num b">SEU — 02</div>
+        <div class="seu-title">製程動力<br><span class="b">SMT／組裝線</span></div>
+        <div class="seu-row"><div class="seu-dot" style="background:#58a6ff"></div>年用電 939,495 度 · 年電費 <strong>413萬元</strong></div>
+        <div class="seu-row"><div class="seu-dot" style="background:#58a6ff"></div>SMT 長線（90kW）+ 短線（43kW）+ 整機組裝（50kW）等</div>
+        <div class="seu-row"><div class="seu-dot" style="background:#58a6ff"></div>製程設備均無變頻控制</div>
+        <div class="ctrl-list">
+          <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:2px;letter-spacing:1px;">ISO 50001 操作控制要求</div>
+          <div class="ctrl-item"><span class="ctrl-icon">📋</span>換線/午休等待機時段降載程序</div>
+          <div class="ctrl-item"><span class="ctrl-icon">📊</span>建立各生產線分項電表（目前缺口）</div>
+          <div class="ctrl-item"><span class="ctrl-icon">🎯</span>設定績效目標：全廠 &lt; 2.40 度/台</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="iso-note">
+      💡 <strong>ISO 50001 PDCA 精神</strong>：一次性節能工程效益遞減；能源管理系統（EnMS）讓節能成為持續改善的組織文化，效益隨時間螺旋上升。凱銳光電的年碳排 <strong>1,824 tCO₂e</strong>，短中期措施可減至 ~1,620 tCO₂e，加入 AI 方案後目標 &lt; 1,280 tCO₂e。
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  SLIDE 3 — 問題診斷
+════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="wrap">
+    <div class="tag">能源問題診斷</div>
+    <h2>六大問題 · 全面量化損失</h2>
+
+    <div class="prob-grid">
+      <div class="prob p1">
+        <div class="prob-no">PROBLEM 01 · SEU-1</div>
+        <div class="prob-t">空調泵浦全無<br>變頻控制</div>
+        <div class="prob-d">冷卻水泵 + 冰水泵 + 冷卻水塔三類泵浦合計年耗電 <strong>406,000度</strong>，全速運轉，無法依負載調節。</div>
+        <div class="prob-loss">⚡ 可回收節費：54～72 萬元／年</div>
+      </div>
+
+      <div class="prob p2">
+        <div class="prob-no">PROBLEM 02 · SEU-1</div>
+        <div class="prob-t">冰機無 EnPI 監控<br>效率衰退不自知</div>
+        <div class="prob-d">設計效率 0.544 kW/RT，已運轉 4 年，完全無即時監控。若效率衰退至 0.65 kW/RT，每年多付電費而不知。</div>
+        <div class="prob-loss">💸 潛在隱性損失：142～276 萬元／年</div>
+      </div>
+
+      <div class="prob p3">
+        <div class="prob-no">PROBLEM 03 · SEU-1</div>
+        <div class="prob-t">冰機台數控制<br>策略不明</div>
+        <div class="prob-d">6月產量降至40%，冷負荷應大減，但用電僅降9%。若仍雙機運轉，等同在低負荷下以最差效率運轉。</div>
+        <div class="prob-loss">📉 單位耗能：5.55度/台（正常月 2.60）</div>
+      </div>
+
+      <div class="prob p4">
+        <div class="prob-no">PROBLEM 04</div>
+        <div class="prob-t">非生產時段<br>基載未量化</div>
+        <div class="prob-d">雙班制，非生產時間達 4,872小時/年（55.6%）。無分時電表，無法判斷夜間/假日是否有異常耗電。</div>
+        <div class="prob-loss">🔍 估潛在基載：107～161 萬元／年可削減</div>
+      </div>
+
+      <div class="prob p5">
+        <div class="prob-no">PROBLEM 05</div>
+        <div class="prob-t">空壓機效率<br>差距 54%</div>
+        <div class="prob-d">日立螺旋式 5.652 kW/CMM；BEBICON 往復式 8.708 kW/CMM，差距 54%。若長時間並聯運轉，大量能源浪費。</div>
+        <div class="prob-loss">⚙️ 建議：BEBICON 僅作緊急備用</div>
+      </div>
+
+      <div class="prob p6">
+        <div class="prob-no">PROBLEM 06</div>
+        <div class="prob-t">承租戶身份<br>計費結構受限</div>
+        <div class="prob-d">無法換時間電價方案、無法調降契約容量（閒置 300kW）、無法直接參與需量反應計畫。節電是唯一降費手段。</div>
+        <div class="prob-loss">🔑 長期策略：爭取獨立電號</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  SLIDE 4 — LCC + 行動計畫
+════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="wrap">
+    <div class="tag">生命週期成本分析 · 改善行動計畫</div>
+    <h2>為什麼 VFD 是最優先投資</h2>
+
+    <div class="s4-grid">
+      <!-- LCC 分析 -->
+      <div>
+        <div class="lcc-box">
+          <div class="lcc-head">
+            <h3>🔬 生命週期成本分析（LCC）— 冷卻水泵為例</h3>
+            <p>以 10 年使用期間評估，而非只看設備售價</p>
+          </div>
+          <div class="lcc-body">
+            <div class="lcc-row"><span>設備投資</span><span class="val g">＋25 萬元</span></div>
+            <div class="lcc-row"><span>不裝VFD · 10年電費</span><span class="val r">765.6 萬元</span></div>
+            <div class="lcc-row"><span>裝VFD · 10年電費（節35%）</span><span class="val g">497.6 萬元</span></div>
+            <div class="lcc-row lcc-total">
+              <span style="font-weight:700">10 年總節省</span>
+              <span class="val g">243 萬元</span>
+            </div>
+            <div class="lcc-row" style="margin-top:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,.08)">
+              <span style="color:rgba(255,255,255,.5)">回收年限</span>
+              <span class="val g" style="font-size:20px">約 11 個月</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:12px 14px; background:rgba(63,185,80,.07); border:1px solid rgba(63,185,80,.2); border-radius:10px; font-size:12px; color:rgba(255,255,255,.6); line-height:1.65;">
+          💡 採購設備時應以 <strong style="color:#3fb950">生命週期成本（LCC）</strong> 評估，而非只比較設備售價。VFD 25萬投資 vs. 10年多支出268萬電費，答案顯而易見。
+        </div>
+      </div>
+
+      <!-- 三階段計畫 -->
+      <div class="phase-list">
+        <div class="phase ph1">
+          <div class="ph-label g">▶ 立即執行 — 零成本操作改善</div>
+          <div class="ph-items">
+            <div class="ph-item"><span>冰水出水溫度上調 1～2°C</span><span class="sv g">省 14～44 萬/年</span></div>
+            <div class="ph-item"><span>確認冰機台數控制策略</span><span class="sv g">省 13～35 萬/年</span></div>
+            <div class="ph-item"><span>空調排程配合生產班表</span><span class="sv g">省 9～22 萬/年</span></div>
+          </div>
+        </div>
+        <div class="phase ph2">
+          <div class="ph-label b">▶ 1～3 個月 — 硬體節能投資</div>
+          <div class="ph-items">
+            <div class="ph-item"><span>冷卻水塔 VFD（5～8萬投資）</span><span class="sv b">省 7.7～10 萬/年</span></div>
+            <div class="ph-item"><span>冷卻水泵 VFD（20～30萬投資）</span><span class="sv b">省 23～34 萬/年</span></div>
+            <div class="ph-item"><span>冰水泵 VFD（20～30萬投資）</span><span class="sv b">省 23～34 萬/年</span></div>
+          </div>
+        </div>
+        <div class="phase ph3">
+          <div class="ph-label p">▶ 3～12 個月 — 監控 + AI 智動化</div>
+          <div class="ph-items">
+            <div class="ph-item"><span>EnPI 監控（冰機 kW/RT）</span><span class="sv p">揭露 142～276 萬損失</span></div>
+            <div class="ph-item"><span>非生產時段電表建置</span><span class="sv p">釐清 107～161 萬基載</span></div>
+            <div class="ph-item"><span>AI 冰機節能方案</span><span class="sv p">省 159～317 萬/年</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  SLIDE 5 — 節費 + 減碳
+════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="wrap">
+    <div class="tag">節費效益 · 減碳潛力</div>
+    <h2>投資回報 × 碳排放路徑</h2>
+
+    <div class="s5-grid">
+      <!-- 節費表 -->
+      <div>
+        <table class="savings-table">
+          <thead>
+            <tr>
+              <th>改善措施</th>
+              <th>投資</th>
+              <th>年節費</th>
+              <th>ROI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>冰水溫度設定調整</td>
+              <td class="g">零成本</td>
+              <td>14～44 萬</td>
+              <td class="g">立即</td>
+            </tr>
+            <tr>
+              <td>冰機台數控制</td>
+              <td class="g">零成本</td>
+              <td>13～35 萬</td>
+              <td class="g">立即</td>
+            </tr>
+            <tr>
+              <td>冷卻水塔 VFD</td>
+              <td>5～8 萬</td>
+              <td>7.7～10 萬</td>
+              <td class="g">6～12月</td>
+            </tr>
+            <tr class="hl">
+              <td>冷卻水泵 VFD</td>
+              <td>20～30 萬</td>
+              <td>23～34 萬</td>
+              <td class="g">≈1 年</td>
+            </tr>
+            <tr class="hl">
+              <td>冰水泵 VFD</td>
+              <td>20～30 萬</td>
+              <td>23～34 萬</td>
+              <td class="g">≈1 年</td>
+            </tr>
+            <tr>
+              <td>空調排程優化</td>
+              <td class="g">零成本</td>
+              <td>9～22 萬</td>
+              <td class="g">立即</td>
+            </tr>
+            <tr>
+              <td>照明 LED 換裝</td>
+              <td>10～30 萬</td>
+              <td>0～26 萬</td>
+              <td>2～3 年</td>
+            </tr>
+            <tr style="background:rgba(188,140,255,.08)">
+              <td style="color:#bc8cff">AI 冰機節能（長期）</td>
+              <td>100～250 萬</td>
+              <td style="color:#bc8cff">159～317 萬</td>
+              <td>1～2 年</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 碳排放面板 -->
+      <div class="carbon-panel">
+        <div class="carbon-kpi now">
+          <div class="cn r">1,824 <span style="font-size:16px">tCO₂e</span></div>
+          <div class="cl">現況年碳排放（114年基線）</div>
+          <div class="cd" style="color:rgba(255,255,255,.5)">3,693,153 kWh × 0.494 kgCO₂e/kWh</div>
+        </div>
+        <div class="carbon-kpi mid">
+          <div class="cn y">~1,620 <span style="font-size:16px">tCO₂e</span></div>
+          <div class="cl">短中期目標（節能 6～12%）</div>
+          <div class="cd" style="color:#e3b341">年減碳 102～222 tCO₂e</div>
+        </div>
+        <div class="carbon-kpi lng">
+          <div class="cn g">&lt;1,280 <span style="font-size:16px">tCO₂e</span></div>
+          <div class="cl">長期目標（含 AI 方案，節能 15～32%）</div>
+          <div class="cd" style="color:#3fb950">年減碳 280～578 tCO₂e</div>
+        </div>
+        <div style="padding:10px 14px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:10px; font-size:12px; color:rgba(255,255,255,.5);">
+          ⚠ <strong style="color:#e3b341">冷媒逸散風險</strong>：開利冰機 HFC 冷媒 GWP 約 1,430。每洩漏 1 kg ≈ 1.43 tCO₂e。應建立年度補充量記錄，納入碳盤查（ISO 14064）。
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-strip">
+      <div class="sstrip sg">
+        <div class="sn2 g">90～198萬</div>
+        <div class="sl">短中期年節費</div>
+      </div>
+      <div class="sstrip sb">
+        <div class="sn2 b">6～12%</div>
+        <div class="sl">短中期節能率</div>
+      </div>
+      <div class="sstrip sp">
+        <div class="sn2 p">15～32%</div>
+        <div class="sl">加入 AI 後總節能率</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+  SLIDE 6 — 下一步行動
+════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="wrap">
+    <div class="tag">下一步行動</div>
+    <h2>本季三件事 × 訪廠確認清單</h2>
+
+    <div class="s6-grid">
+      <div class="action-list">
+        <div class="action a1">
+          <div class="action-no r">① 本週執行 · 零成本</div>
+          <div class="action-t">冰水出水溫度確認與上調</div>
+          <div class="action-d">確認目前設定值 → 嘗試上調 1°C → 觀察 1 週室溫是否達標</div>
+          <div class="action-val r">預估年省 14～44 萬元</div>
+        </div>
+        <div class="action a2">
+          <div class="action-no y">② 本月執行 · 零成本</div>
+          <div class="action-t">冰機台數操作記錄調閱</div>
+          <div class="action-d">確認 6 月低產量期間是否雙機運轉 → 設定「冷負荷 &lt; 480RT 切換單機」操作規範</div>
+          <div class="action-val y">預估年省 13～35 萬元</div>
+        </div>
+        <div class="action a3">
+          <div class="action-no g">③ 本季完成評估，下季安裝</div>
+          <div class="action-t">啟動泵浦 VFD 採購評估</div>
+          <div class="action-d">優先：冷卻水塔（5～8萬，ROI最快）→ 冷卻水泵 → 冰水泵<br>選購 IE3 效率等級 VFD，確認控制邏輯（依水溫自動調速）</div>
+          <div class="action-val g">三項合計年省 54～78 萬元 · ROI ≈ 1 年</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="check-box card">
+          <h3>📋 訪廠確認清單</h3>
+          <div class="checks">
+            <div class="ci"><span class="ci-icon">◻</span>冰水出水溫度目前設定值（°C）</div>
+            <div class="ci"><span class="ci-icon">◻</span>冰機台數控制邏輯是否存在？可否調閱歷史記錄？</div>
+            <div class="ci"><span class="ci-icon">◻</span>冷卻水泵、冰水泵每日開機時間是否隨生產同步？</div>
+            <div class="ci"><span class="ci-icon">◻</span>夜間/假日是否仍有空調運轉？基載約多少 kW？</div>
+            <div class="ci"><span class="ci-icon">◻</span>冰機最近保養記錄 + 冷媒補充紀錄</div>
+            <div class="ci"><span class="ci-icon">◻</span>廠內照明是否已全面 LED？各區各幾盞？</div>
+            <div class="ci"><span class="ci-icon">◻</span>是否有 SCADA/BMS 可作為 EMS 整合基礎？</div>
+            <div class="ci"><span class="ci-icon">◻</span>房東對獨立電號的態度為何？</div>
+          </div>
+        </div>
+
+        <div class="blutech-box">
+          <strong>ENERLYZER® 解決方案</strong><br>
+          博世科 <strong>NeVerLoSs® 無線感測</strong> + <strong>ENERLYZER® AI 平台</strong>，
+          可建置冰機 kW/RT 即時監控、需量管理、非生產時段基載告警、AI 自動調控。
+          ISO 50001 平均回收年限 <strong>1.7 年</strong>，每家平均節電 <strong>244 萬度</strong>。
+        </div>
+
+        <div class="cta">報告製作：<span>博世科智能股份有限公司 Blutech Inc.</span> · V2 · 2026-03-27</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<button class="arr" id="bP">&#8592;</button>
+<button class="arr" id="bN">&#8594;</button>
+<div class="nav" id="dots"></div>
+<div class="sn" id="sn"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  const snEl   = document.getElementById('sn');
+  let cur = 0;
+
+  slides.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' on':'');
+    d.onclick = () => go(i);
+    dotsEl.appendChild(d);
+  });
+
+  function go(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('on');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('on');
+    snEl.textContent = (cur+1) + ' / ' + slides.length;
+  }
+
+  document.getElementById('bP').onclick = () => go(cur-1);
+  document.getElementById('bN').onclick = () => go(cur+1);
+  document.addEventListener('keydown', e => {
+    if (e.key==='ArrowRight'||e.key==='ArrowDown') go(cur+1);
+    if (e.key==='ArrowLeft' ||e.key==='ArrowUp')   go(cur-1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>
